@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+	    <meta charset="utf-8">
+	</head>
+	<body>
+
+		<div id="dp-canvas" class="image-injection" style="position:relative;">
+		</div>
+		<div id="dp-fileinput"></div>
+		<div id="dp-thumb" style="position:absolute;left:1020px;top:0;border:1px solid gray;width:100px;background-color: gray;"></div>
+		<div id="dp-panel-settings" style="position:absolute;left:1140px;top:0;border:1px solid gray;">
+			<form>
+			<div class="input-row">
+				<span class="label inline">Upload d'images</span>
+				<input id="fileupload" type="file" multiple/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Densité</span>
+				<input id="density" type="number"/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Taille des particules</span>
+				<input id="particle-size" type="number"/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Vélocité initiale</span>
+				<input id="particle-velocity" type="number"/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Dessin</span>
+				<input id="particle-draw" checked type="checkbox"/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Couleur particules</span>
+				<input id="particle-color" type="text"/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Masse</span>
+				<input id="mass" type="number"/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Anti-masse</span>
+				<input id="anti-mass" type="number"/>
+			</div>
+			<div class="input-row">
+				<input id="nb-filter" type="button" value="Mode formes"/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Threshold</span>
+				<input id="nb-treshold" type="number"/>
+			</div>
+			<div class="input-row">
+				<input id="color-filter" type="button" value="Mode couleurs"/>
+			</div>
+			<div class="input-row">
+				<span class="label inline">Texte</span>
+				<textarea name="textarea" id="zone-texte" rows="5"></textarea>
+			</div>
+				<div class="input-row">
+					<input id="start" type="button" value="Start"/>
+				</div>
+				<div class="input-row">
+					<input id="stop" type="button" value="Stop"/>
+				</div>
+			</form>
+
+
+
+
+			<form>
+				<div class="input-row">
+					<span class="label inline">Upload d'images</span>
+					<input id="fileupload2" type="file" multiple/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Densité</span>
+					<input id="density2" type="number"/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Taille des particules</span>
+					<input id="particle-size2" type="number"/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Vélocité initiale</span>
+					<input id="particle-velocity2" type="number"/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Dessin</span>
+					<input id="particle-draw2" checked type="checkbox"/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Couleur particules</span>
+					<input id="particle-color2" type="text"/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Masse</span>
+					<input id="mass2" type="number"/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Anti-masse</span>
+					<input id="anti-mass2" type="number"/>
+				</div>
+				<div class="input-row">
+					<input id="nb-filter2" type="button" value="Mode formes"/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Threshold</span>
+					<input id="nb-treshold2" type="number"/>
+				</div>
+				<div class="input-row">
+					<input id="color-filter2" type="button" value="Mode couleurs"/>
+				</div>
+				<div class="input-row">
+					<span class="label inline">Texte</span>
+					<textarea name="textarea" id="zone-texte2" rows="5"></textarea>
+				</div>
+				<div class="input-row">
+					<input id="start2" type="button" value="Start"/>
+				</div>
+				<div class="input-row">
+					<input id="stop2" type="button" value="Stop"/>
+				</div>
+			</form>
+		</div>
+	</body>
+	<script src="core.js"></script>
+	<script src="color.js"></script>
+	<script src="my.js"></script>
+</html>
