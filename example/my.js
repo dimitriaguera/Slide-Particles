@@ -2,12 +2,12 @@
 
 "use strict";
 
-  var diaporama = diapPart.getInstance({stop: false});
-  var d2 = diapPart.getInstance({stop: false, text: 'OnCollab'});
-  var d3 = diapPart.getInstance({stop: false, text: 'ChrisRod'});
-  var d4 = diapPart.getInstance({stop: false, text: 'Ratking'});
-  var d5 = diapPart.getInstance({stop: false, text: 'Pedales'});
-  var d6 = diapPart.getInstance({stop: false, text: 'La Muse'});
+  var diaporama = slideParticles.getInstance({stop: false});
+  var d2 = slideParticles.getInstance({stop: false, text: 'OnCollab teste tres long'});
+  var d3 = slideParticles.getInstance({stop: false, text: 'ChrisRod'});
+  var d4 = slideParticles.getInstance({stop: false, text: 'Ratking'});
+  var d5 = slideParticles.getInstance({stop: false, text: 'Pedales'});
+  var d6 = slideParticles.getInstance({stop: false, text: 'La Muse'});
 
   diaporama.createSlide( diaporama.settings.text );
   d2.createSlide( d2.settings.text );

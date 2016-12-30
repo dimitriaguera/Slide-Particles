@@ -37,9 +37,9 @@ gulp.task('myjs', function() {
   return gulp.src(PATHS.myjs)
     .pipe($.sourcemaps.init())
     .pipe($.babel())
-    .pipe($.if(isProduction, $.concat('jquery.scroll-sub-menu.min.js')))
+    .pipe($.if(isProduction, $.concat('slide-particles.min.js')))
     .pipe($.if(isProduction, uglify))
-    .pipe($.if(!isProduction, $.concat('jquery.scroll-sub-menu.js')))
+    .pipe($.if(!isProduction, $.concat('slide-particles.js')))
     .pipe($.if(!isProduction, $.sourcemaps.write()))
     .pipe($.size())
     .pipe(gulp.dest('dist'));

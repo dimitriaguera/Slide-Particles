@@ -214,9 +214,9 @@ var slideParticles = (function (window, document, undefined) {
 
     valueMatrix: function ( matrix, value ) {
       var a = this.size.x,
-        b = Math.floor(a + this.size.w),
+        b = Math.min( Math.floor(a + this.size.w), matrix.length ),
         c = this.size.y,
-        d = Math.floor(c + this.size.h);
+        d = Math.min( Math.floor(c + this.size.h), matrix[0].length );
       if( matrix.length < a || matrix[0].length < d ) return;
 
       var i, j, p = this.context.getImageData(0, 0, this.instance.canvas.width, this.instance.canvas.height).data;
