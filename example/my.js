@@ -3,18 +3,18 @@
 "use strict";
 
   var diaporama = slideParticles.getInstance({stop: false});
-  var d2 = slideParticles.getInstance({stop: false, text: 'OnCollab teste tres long'});
-  var d3 = slideParticles.getInstance({stop: false, text: 'ChrisRod'});
-  var d4 = slideParticles.getInstance({stop: false, text: 'Ratking'});
-  var d5 = slideParticles.getInstance({stop: false, text: 'Pedales'});
-  var d6 = slideParticles.getInstance({stop: false, text: 'La Muse'});
+  // var d2 = slideParticles.getInstance({stop: false, text: 'OnCollab teste tres long'});
+  // var d3 = slideParticles.getInstance({stop: false, text: 'ChrisRod'});
+  // var d4 = slideParticles.getInstance({stop: false, text: 'Ratking'});
+  // var d5 = slideParticles.getInstance({stop: false, text: 'Pedales'});
+  // var d6 = slideParticles.getInstance({stop: false, text: 'La Muse'});
 
-  diaporama.createSlide( diaporama.settings.text );
-  d2.createSlide( d2.settings.text );
-  d3.createSlide( d3.settings.text );
-  d4.createSlide( d4.settings.text );
-  d5.createSlide( d5.settings.text );
-  d6.createSlide( d6.settings.text );
+  // diaporama.createSlide( diaporama.settings.text );
+  // d2.createSlide( d2.settings.text );
+  // d3.createSlide( d3.settings.text );
+  // d4.createSlide( d4.settings.text );
+  // d5.createSlide( d5.settings.text );
+  // d6.createSlide( d6.settings.text );
 
     diaporama.canvas.onmousemove = function ( e ) {
       diaporama.liberation = true;
@@ -42,60 +42,63 @@
   //
   //  //// FORMULAIRE
   //
-  //  function applyInputEvent ( input ) {
-  //
-  //    if ( input[1].type === 'checkbox' ) {
-  //      input[1].onchange = function( e ){
-  //        diaporama.settings[input[0]] = this.checked;
-  //      };
-  //      return;
-  //    }
-  //
-  //    if ( Array.isArray( diaporama.settings[input[0]] ) ){
-  //      input[1].value = diaporama.settings[input[0]][0];
-  //      input[1].onchange = function( e ){
-  //        diaporama.settings[input[0]][0] = this.value;
-  //      };
-  //    }
-  //    else {
-  //      input[1].value = diaporama.settings[input[0]];
-  //      input[1].onchange = function( e ){
-  //        diaporama.settings[input[0]] = this.value;
-  //      };
-  //    }
-  //  }
-  //
-  //  var inputs = [
-  //    [ 'density', document.getElementById('density') ],
-  //    [ 'particleSize', document.getElementById('particle-size') ],
-  //    [ 'initialVelocity', document.getElementById('particle-velocity') ],
-  //    [ 'draw', document.getElementById('particle-draw') ],
-  //    [ 'particleColor', document.getElementById('particle-color') ],
-  //    [ 'mass', document.getElementById('mass') ],
-  //    [ 'antiMass', document.getElementById('anti-mass') ],
-  //    [ 'thresholdNB', document.getElementById('nb-treshold') ]
-  //  ];
-  //
-  //  for( var i = 0; i < inputs.length; i++ ) {
-  //    applyInputEvent( inputs[i] );
-  //  }
-  //
-  //  var btnModeForm = document.getElementById('nb-filter'),
-  //    btnModeColor = document.getElementById('color-filter'),
-  //    btnUpload = document.getElementById('fileupload'),
-  //    btnStart = document.getElementById('start'),
-  //    btnStop = document.getElementById('stop');
-  //
-  //  btnUpload.onchange = diaporama.load.bind(diaporama);;
-  //  btnModeForm.onclick = function () {
-  //    diaporama.switchMode( 'modeForm' );
-  //  };
-  //  btnModeColor.onclick = function () {
-  //    diaporama.switchMode( 'modeColor' );
-  //  };
-  //
-  //  btnStart.onclick = diaporama.start.bind(diaporama);
-  //  btnStop.onclick = diaporama.stop.bind(diaporama);
+   function applyInputEvent ( input ) {
+  
+     if ( input[1].type === 'checkbox' ) {
+       input[1].onchange = function( e ){
+         diaporama.settings[input[0]] = this.checked;
+       };
+       return;
+     }
+  
+     if ( Array.isArray( diaporama.settings[input[0]] ) ){
+       input[1].value = diaporama.settings[input[0]][0];
+       input[1].onchange = function( e ){
+         diaporama.settings[input[0]][0] = this.value;
+       };
+     }
+     else {
+       input[1].value = diaporama.settings[input[0]];
+       input[1].onchange = function( e ){
+         diaporama.settings[input[0]] = this.value;
+       };
+     }
+   }
+  
+   var inputs = [
+     [ 'density', document.getElementById('density') ],
+     [ 'particleSize', document.getElementById('particle-size') ],
+     [ 'initialVelocity', document.getElementById('particle-velocity') ],
+     [ 'draw', document.getElementById('particle-draw') ],
+     [ 'particleColor', document.getElementById('particle-color') ],
+     [ 'mass', document.getElementById('mass') ],
+     [ 'antiMass', document.getElementById('anti-mass') ],
+     [ 'thresholdNB', document.getElementById('nb-treshold') ]
+   ];
+  
+   for( var i = 0; i < inputs.length; i++ ) {
+     applyInputEvent( inputs[i] );
+   }
+  
+   var btnModeForm = document.getElementById('nb-filter'),
+     btnModeColor = document.getElementById('color-filter'),
+     btnUpload = document.getElementById('fileupload'),
+     btnStart = document.getElementById('start'),
+     btnStop = document.getElementById('stop');
+  
+   btnUpload.onchange = function(e){
+     diaporama.load(e, true);
+
+   }
+   btnModeForm.onclick = function () {
+     diaporama.switchMode( 'modeForm' );
+   };
+   btnModeColor.onclick = function () {
+     diaporama.switchMode( 'modeColor' );
+   };
+  
+   btnStart.onclick = diaporama.start.bind(diaporama);
+   btnStop.onclick = diaporama.stop.bind(diaporama);
   //
   //
   //  ////////////////////////////////// TEXT ////////////////////

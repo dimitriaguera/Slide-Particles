@@ -1,5 +1,6 @@
 slideParticles.registerMode( 'modeColor', {
   options: {},
+  proto: {},
   proto_particles: {
     soumisColor: function(){
       this.inForm = 0;
@@ -10,12 +11,15 @@ slideParticles.registerMode( 'modeColor', {
   },
   proto_matrix: {
     colorMatrix: function ( matrix ) {
+      
       var a = this.size.x,
-        c = this.size.y,
-        d = Math.floor(c + this.size.h);
+          b = Math.floor(a + this.size.w),
+          c = this.size.y,
+          d = Math.floor(c + this.size.h);
+
       if( matrix.length < a || matrix[0].length < d ) return;
 
-      var i, j, r, g, b, p = this.context.getImageData(0, 0, this.instance.canvas.width, this.instance.canvas.height).data;
+      var i, j, r, g, b, p = this.context.getImageData( 0, 0, this.instance.canvas.width, this.instance.canvas.height ).data;
 
       for( i = 0; i < this.canvas.height; i++ ){
         for( j = 0; j < this.canvas.width; j++ ){
