@@ -8,8 +8,8 @@ var slideParticles = (function (window, document, undefined) {
     
     // Defaults settings.
     defaults = {
-      height: 300,
-      width: 150,
+      height: 500,
+      width: 500,
       background: '#fff',
       thresholdNB: [128],
       targetElement: 'dp-canvas',
@@ -317,7 +317,7 @@ var slideParticles = (function (window, document, undefined) {
       }
     },
 
-    // Construct matrix, according to vanvas's image data values.
+    // Construct matrix, according to canvas's image data values.
     // If image data pixel is white, corresponding matrix case is set too value.
     // If image data pixel is black, corresponding matrix case is set to 0.
     valueMatrix: function ( matrix, value ) {
