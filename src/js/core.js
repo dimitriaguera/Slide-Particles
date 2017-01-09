@@ -21,6 +21,7 @@ var slideParticles = (function (window, document, undefined) {
       text:'Salut !',
       mass: 100,
       antiMass: -500,
+      hoverMass: 5000,
       density: 1500,
       particleSize: 1,
       particleColor: '#000',
@@ -348,6 +349,8 @@ var slideParticles = (function (window, document, undefined) {
       if ( filter ) {
         m.applyFilter( filters[this.instance.mode].name, this.settings[filters[this.instance.mode].param] );
       }
+      // Apply style.
+      m.canvas.style.cursor = 'pointer';
 
       // Apply click event on the thumb's canvas that fire the DiapPart's instance active index to coresponding Matrix.
       m.canvas.onclick = function( matrix ){

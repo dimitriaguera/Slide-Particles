@@ -3,7 +3,13 @@
 "use strict";
 
   var gui, btnUpload, controller = {},
-    dp = slideParticles.getInstance({stop: false, density: 5000});
+    dp = slideParticles.getInstance({
+      stop: false,
+      density: 5000,
+      thumbWidth: 70,
+      thumbHeight: 70
+    });
+
     dp.canvas.onmousemove = function ( e ) {
       dp.liberation = true;
     };
@@ -25,25 +31,39 @@
   controller.modeShape = function () {
     dp.switchMode( 'modeForm' );
   };
+  controller.uploadFiles = function () {
+    btnUpload.click();
+  };
 
   ///// GUI Form.
 
   gui = new dat.GUI();
+  gui.add(controller, 'uploadFiles');
   gui.add(dp.settings, 'draw', false);
   gui.add(dp, 'stop');
   gui.add(dp, 'start');
+
   var f2 = gui.addFolder('Modes');
   f2.add(controller, 'modeColor');
   f2.add(controller, 'modeShape');
+
   var f1 = gui.addFolder('Particles');
   f1.add(dp.settings, 'density', 0, 20000);
   f1.add(dp.settings, 'particleSize', 1, 30);
-  f1.add(dp.settings, 'particleColor');
   f1.add(dp.settings, 'initialVelocity', 0, 10);
+
   var f3 = gui.addFolder('Mass');
   f3.add(dp.champs[0], 'mass', -5000, 5000);
+  f3.add(dp.champs[0], 'antiMass', -5000, 5000);
   f3.add(dp.champs[0].position, 'x', 0, dp.settings.width);
   f3.add(dp.champs[0].position, 'y', 0, dp.settings.height);
+
+  var f4 = gui.addFolder('Color');
+  f4.addColor(dp.settings, 'particleColor');
+  f4.addColor(dp.settings, 'background').onChange(function( value ){
+    dp.canvas.style.backgroundColor = value;
+    document.body.style.backgroundColor = value;
+  });
 
 /*  defaults = {
     height: 500,
