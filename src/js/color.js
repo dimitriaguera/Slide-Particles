@@ -11,18 +11,11 @@ slideParticles.registerMode( 'modeColor', {
   },
   proto_matrix: {
     colorMatrix: function ( matrix ) {
-      
-      var a = this.size.x,
-          b = Math.floor(a + this.size.w),
-          c = this.size.y,
-          d = Math.floor(c + this.size.h);
-
-      if( matrix.length < a || matrix[0].length < d ) return;
 
       var i, j, r, g, b, p = this.context.getImageData( 0, 0, this.instance.canvas.width, this.instance.canvas.height ).data;
 
-      for( i = 0; i < this.canvas.height; i++ ){
-        for( j = 0; j < this.canvas.width; j++ ){
+      for( i = 0; i < this.canvas.width; i++ ){
+        for( j = 0; j < this.canvas.height; j++ ){
           r = p[((this.instance.canvas.width * j) + i) * 4];
           g = p[((this.instance.canvas.width * j) + i) * 4 + 1];
           b = p[((this.instance.canvas.width * j) + i) * 4 + 2];

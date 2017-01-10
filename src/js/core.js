@@ -8,8 +8,8 @@ var slideParticles = (function (window, document, undefined) {
     
     // Defaults settings.
     defaults = {
-      height: 300,
-      width: 150,
+      height: 500,
+      width: 500,
       background: '#fff',
       thresholdNB: [128],
       targetElement: 'dp-canvas',
@@ -21,6 +21,7 @@ var slideParticles = (function (window, document, undefined) {
       text:'Hello World !',
       mass: 100,
       antiMass: -500,
+      hoverMass: 5000,
       density: 1500,
       particleSize: 1,
       particleColor: '#000',
@@ -317,7 +318,7 @@ var slideParticles = (function (window, document, undefined) {
       }
     },
 
-    // Construct matrix, according to vanvas's image data values.
+    // Construct matrix, according to canvas's image data values.
     // If image data pixel is white, corresponding matrix case is set too value.
     // If image data pixel is black, corresponding matrix case is set to 0.
     valueMatrix: function ( matrix, value ) {
@@ -348,6 +349,8 @@ var slideParticles = (function (window, document, undefined) {
       if ( filter ) {
         m.applyFilter( filters[this.instance.mode].name, this.settings[filters[this.instance.mode].param] );
       }
+      // Apply style.
+      m.canvas.style.cursor = 'pointer';
 
       // Apply click event on the thumb's canvas that fire the DiapPart's instance active index to coresponding Matrix.
       m.canvas.onclick = function( matrix ){
