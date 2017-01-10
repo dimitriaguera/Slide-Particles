@@ -4,7 +4,7 @@ var slideParticles = (function (window, document, undefined) {
 
     "use strict";
 
-    var fn, filter, proceed, filters, matrixMethod, oo = {}, getProto = Object.getPrototypeOf,
+    var fn, filter, proceed, filters, nextMatrixMode, matrixMethod, oo = {}, getProto = Object.getPrototypeOf,
     
     // Defaults settings.
     defaults = {
@@ -31,10 +31,12 @@ var slideParticles = (function (window, document, undefined) {
       initialVelocity: 3,
       massX: 880,
       massY: 370,
+      delay: 700,
       initialMode: 'modeForm',
       draw: false,
       stop: false,
       switchModeCallback: null,
+      nextMatrixMode: 'liberationParts',
       modes: {
         modeForm: true,
       } 
@@ -95,6 +97,29 @@ var slideParticles = (function (window, document, undefined) {
       modeForm: 'valueMatrix'
     };
 
+
+    nextMatrixMode = {
+      // Make particles free for short delay.
+      liberationParts: function ( delay ) {
+        var self = this;
+        var d = delay || this.settings.delay;
+
+        // Make free parts from current form value.
+        this.clearParts();
+
+        // Particles are free from matrix of type 'value'.
+        this.liberation = !this.liberation;
+
+          // Mass strength is inverted.
+          this.massActive = this.settings.antiMass;
+
+          // When delay's over, whe return to normal mass strength and particles behavior.
+          setTimeout(function(){
+            self.massActive = self.settings.mass;
+            self.liberation = !self.liberation;
+          }, d)
+      },
+    };
 
     // Utility functions.
     fn = {
@@ -165,6 +190,25 @@ var slideParticles = (function (window, document, undefined) {
           }
         }
         return a;
+      },
+
+      loadImage: function ( src, self, thumb ) {
+
+            var img = new Image();
+            // When image is loaded.
+            img.onload = function(){
+
+              // Create slide, with Image input.
+              var m = self.createSlide( this );
+
+              if ( !thumb ) return;
+              
+              // Create and store thumb.
+              m.renderThumbnails( self.settings.thumdnailsID, false );
+
+            };
+            // Load img.
+            img.src = src;
       }
     };
 
@@ -356,8 +400,6 @@ var slideParticles = (function (window, document, undefined) {
       m.canvas.onclick = function( matrix ){
         return function ( e ) {
           self.instance.goTo( matrix );
-          self.instance.clearParts();
-          self.instance.liberationParts1();
         }
       }( m );
 
@@ -383,6 +425,7 @@ var slideParticles = (function (window, document, undefined) {
     this.thumbOriginalTab = [];
     this.particles = [];
     this.champs = [];
+    this.massActive = this.settings.mass;
     this.mode = this.settings.initialMode;
     this.liberation = false;
     this.activeIndex = null;
@@ -479,42 +522,42 @@ var slideParticles = (function (window, document, undefined) {
       // Method to pass as onchange event function in files input.
       load: function ( e, thumb ) {
 
-        var i, files = e.target.files, self = this;
+        var i, self = this; 
+        var files = ( e.target ) ? e.target.files : e; 
+        var th = ( thumb === 'false' ) ? false : true;
 
         // If no file selected, exit.
-        if ( !files ) return;
+        if ( !files || ( files.constructor !== Array && !files instanceof FileList ) ) return console.log( 'No files matched' );
 
         for ( i = 0; i < files.length; i++ ){
 
           var file = files[i];
 
-          // If file is not an image, pass to next file.
-          if ( !file.type.match( 'image' ) ) continue;
+          // If file comes from input files.
+          if ( file.type ){
 
-          var reader = new FileReader();
+            // If file is not an image, pass to next file.
+            if ( !file.type.match( 'image' ) ) continue;
 
-          // When file is loaded.
-          reader.onload = function ( event ) {
+              var reader = new FileReader();
 
-            var img = new Image();
+              // When file is loaded.
+              reader.onload = function ( event ) {
 
-            // When image is loaded.
-            img.onload = function(){
+                // Set image data.
+                var src = event.target.result;
 
-              // Create slide, with Image input.
-              var m = self.createSlide( this );
+                // Load image.
+                fn.loadImage.call( this, src, self, th );
+              };
+              // Load file.
+              reader.readAsDataURL( file );
 
-              if ( !thumb ) return;
-              
-              // Create and store thumb.
-              m.renderThumbnails( self.settings.thumdnailsID, false );
+          } else { // If files is array of url.
 
-            };
-            // Load img.
-            img.src = event.target.result;
-          };
-          // Load file.
-          reader.readAsDataURL( file );
+            // Load image.
+            fn.loadImage.call( this, file, self, th );
+          }
         }
       },
 
@@ -554,25 +597,25 @@ var slideParticles = (function (window, document, undefined) {
 
       // Set activeIndex to matrix's thumb index.
       goTo: function ( matrix ) {
+        this.callNextMatrixMode();
         this.activeIndex = this.thumbOriginalTab.indexOf( matrix );
       },
 
-      // Make particles free for short delay.
-      liberationParts1: function ( delay ) {
-        var self = this;
-        var d = delay || 500;
+      // Method to add new switch matrix function.
+      registerNextMatrixMode: function ( name, fn ) {
+        if ( typeof fn !== 'function' || typeof name !== 'string' ) {
+          return console.log( 'Error, name required and must be type string, fn required and must be type function' );
+        }
+        nextMatrixMode[ name ] = fn;
+      },
 
-        // Particles are free from matrix of type 'value'.
-        this.liberation = !this.liberation;
-
-          // Mass strength is inverted.
-          this.champs[0].mass = this.settings.antiMass;
-
-          // When delay's over, whe return to normal mass strength and particles behavior.
-          setTimeout(function(){
-            self.champs[0].mass = self.settings.mass;
-            self.liberation = !self.liberation;
-          }, d)
+      // Function called between old and new matrix active.
+      callNextMatrixMode: function (){
+        try {
+          nextMatrixMode[ this.settings.nextMatrixMode ].call( this );
+        } catch ( e ) {
+          console.log( e.name + ' - ' + e.message);
+        }
       },
 
       // Create new Particle, with random position and speed.
@@ -737,8 +780,11 @@ var slideParticles = (function (window, document, undefined) {
     // Proceed particle according to existing mass.
     Particle.prototype.soumisChamp = function() {
 
+
+      var mass = this.instance.massActive;
+
       // If no mass strength, return.
-      if ( !this.instance.champs[0].mass ) return;
+      if ( !mass ) return;
 
       // If particle has not flagged 'inForm'.
       if ( this.inForm !== 1 ) {
@@ -751,7 +797,7 @@ var slideParticles = (function (window, document, undefined) {
         for( var i = 0; i < l; i++ ){
           var distX = this.instance.champs[i].position.x - this.position.x;
           var distY = this.instance.champs[i].position.y - this.position.y;
-          var force = this.instance.champs[i].mass / Math.pow(distX * distX + distY * distY, 1.5);
+          var force = mass / Math.pow(distX * distX + distY * distY, 1.5);
           totalAccelerationX += distX * force;
           totalAccelerationY += distY * force;
         }

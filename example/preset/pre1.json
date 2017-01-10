@@ -1,0 +1,51 @@
+{
+  "preset": "Default",
+  "closed": false,
+  "remembered": {
+    "Default": {
+      "0": {
+        "draw": false,
+        "density": 5000,
+        "particleSize": 1,
+        "initialVelocity": 3,
+        "mass": 100,
+        "particleColor": "#000",
+        "background": "#fff",
+        "antiMass": -500,
+        "delay": 700
+      }
+    }
+  },
+  "folders": {
+    "Animation": {
+      "preset": "Default",
+      "closed": true,
+      "folders": {}
+    },
+    "Modes": {
+      "preset": "Default",
+      "closed": true,
+      "folders": {}
+    },
+    "Particles": {
+      "preset": "Default",
+      "closed": true,
+      "folders": {}
+    },
+    "Mass": {
+      "preset": "Default",
+      "closed": true,
+      "folders": {}
+    },
+    "Color": {
+      "preset": "Default",
+      "closed": true,
+      "folders": {}
+    },
+    "Change picture modes": {
+      "preset": "Default",
+      "closed": true,
+      "folders": {}
+    }
+  }
+}
