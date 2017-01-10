@@ -18,7 +18,7 @@ var slideParticles = (function (window, document, undefined) {
       panelID: 'dp-panel-settings',
       thumbWidth: 100,
       thumbHeight: 100,
-      text:'Salut !',
+      text:'Hello World !',
       mass: 100,
       antiMass: -500,
       density: 1500,
@@ -368,7 +368,7 @@ var slideParticles = (function (window, document, undefined) {
     }
   };
 
-  /****
+  /**
    * DiapPart constructor.
    * A DiapParet instance must be created and initialized to create slideshow.
    *
@@ -405,7 +405,7 @@ var slideParticles = (function (window, document, undefined) {
         this.centerMass();
 
         // Create the mass.
-        this.champs.push( new Champ( new Vector(this.settings.massX, this.settings.massY), this.settings.mass ) );
+        this.champs.push( new Mass( new Vector(this.settings.massX, this.settings.massY), this.settings.mass ) );
 
         // Start the loop.
         this.loop();
@@ -529,7 +529,7 @@ var slideParticles = (function (window, document, undefined) {
 
       // Create new mass and store on champ array.
       addMass: function( x, y, mass ){
-        var m = new Champ( new Vector(x, y), mass );
+        var m = new Mass( new Vector(x, y), mass );
         this.champs.push( m );
         return m;
       },
@@ -804,12 +804,12 @@ var slideParticles = (function (window, document, undefined) {
     };
 
     // Mass constructor.
-    function Champ( point, mass ) {
+    function Mass( point, mass ) {
       this.position = point;
       this.setMass( mass );
     }
 
-    Champ.prototype.setMass = function( mass ){
+    Mass.prototype.setMass = function( mass ){
       this.mass = mass || 0;
       this.color = mass < 0 ? "#f00" : "#0f0";
     };
