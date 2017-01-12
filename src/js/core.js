@@ -4,14 +4,13 @@ var slideParticles = (function (window, document, undefined) {
 
     "use strict";
 
-    var fn, filter, proceed, filters, nextMatrixMode, matrixMethod, oo = {}, getProto = Object.getPrototypeOf,
+    var fn, filter, proceed, modes, filters, nextSlideAnim, matrixMethod, oo = {}, getProto = Object.getPrototypeOf,
     
     // Defaults settings.
     defaults = {
       height: 500,
       width: 500,
       background: '#fff',
-      thresholdNB: [128],
       targetElement: 'dp-canvas',
       inputFileID: 'dp-fileinput',
       thumdnailsID: 'dp-thumb',
@@ -32,38 +31,32 @@ var slideParticles = (function (window, document, undefined) {
       massX: 880,
       massY: 370,
       delay: 700,
-      initialMode: 'modeForm',
+      initialMode: 'modeShape',
       draw: false,
       stop: false,
       switchModeCallback: null,
-      nextMatrixMode: 'liberationParts',
+      nextSlideAnim: 'drawMeAndExplode',
       modes: {
         modeForm: true,
       } 
     };
 
-
     /**
-     * All image filters function.
+     * All registered modes.
      * 
-     */
-    filter = {
-      // Turn colored picture on black and white. Used for modeForm.
-      blackAndWhite: function ( pixels, threshold ) {
-        if ( !pixels ) return pixels;
-        var i, r, g, b, v, d = pixels.data;
-        for ( i = 0; i < d.length; i+=4 ) {
-          r = d[i];
-          g = d[i+1];
-          b = d[i+2];
-          v = (0.2126*r + 0.7152*g + 0.0722*b >= threshold) ? 255 : 0;
-          d[i] = d[i+1] = d[i+2] = v
-        }
-        return pixels;
-      }
-    };
-
-    /**
+     * Structure must be respected :
+     * {
+     *    modeName: {
+     *        filters: {
+     *            name: filterName - type string,
+     *            param: [param1, param2...] - type array
+     *        }
+     *        proceed: [particleMethod1, particleMethod2...] - type array,
+     *        matrixMethod: matrixMethodName - type string
+     *    }  
+     * }
+     * 
+     **** FILTERS
      * Each modes registered need an entry on filters object.
      * It permit to call corresponding filter function for each mode registered.
      * The corresponding filter fonction is called when matrix are built.
@@ -74,143 +67,31 @@ var slideParticles = (function (window, document, undefined) {
      * name : name of the filter function attach to filter object.
      * param : key targetting the settings parameter, passing as argument when filter function is called. Must be an Array in settings.
      * 
-    */ 
-    filters = {
-      modeForm: {
-        name: 'blackAndWhite',
-        param: 'thresholdNB'
-      }
-    };
+     * 
+     **** PROCEED
+     * For each mode, register all methods to apply for eache Particles instance in the loop.
+     * Must be a Particles method.
+     * -----> see DiapPart.prototype.partProceed
+     * 
+     * 
+     **** MATRIXMETHOD
+     * For each mode, register the Matrix method called to create the matrix (2 dimentional array).
+     * 
+     */
+    modes = {};
 
-  /**
-   * For each mode, register all methods to apply for eache Particles instance in the loop.
-   * Must be a Particles method.
-   * -----> see DiapPart.prototype.partProceed
-   * 
-   */
-    proceed = {
-      modeForm: ['soumisChamp', 'soumisForm']
-    };
+    /**
+     * All image filters functions.
+     * 
+     */
+    filter = {};
 
-    // For each mode, register the Matrix method called to create the matrix (2 dimentional array).
-    matrixMethod = {
-      modeForm: 'valueMatrix'
-    };
+    /**
+     * All slide transition functions.
+     * 
+     */
+    nextSlideAnim = {};
 
-
-    nextMatrixMode = {
-      // Make particles free for short delay.
-      liberationParts: function ( delay ) {
-        var self = this;
-        var d = delay || this.settings.delay;
-
-        // Make free parts from current form value.
-        this.clearParts();
-
-        // Particles are free from matrix of type 'value'.
-        this.liberation = !this.liberation;
-
-          // Mass strength is inverted.
-          this.massActive = this.settings.antiMass;
-
-          // When delay's over, whe return to normal mass strength and particles behavior.
-          setTimeout(function(){
-            self.massActive = self.settings.mass;
-            self.liberation = !self.liberation;
-          }, d)
-      },
-    };
-
-    // Utility functions.
-    fn = {
-      // Return viewport size.
-      getViewport: function() {
-        return {
-          w: Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
-          h: Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-        };
-      },
-
-      // Append element in target.
-      append: function ( target, element ) {
-        if ( typeof target === 'string' ) {
-          document.getElementById( target ).appendChild( element );
-        }
-        else {
-          target.appendChild( element );
-        }
-      },
-
-      // Test if target is plain object. Thank you jQuery 3+ !
-      isPlainObject: function ( target ) {
-        var proto, Ctor;
-        // Detect obvious negatives
-        // Use toString instead of jQuery.type to catch host objects
-        if ( !target || oo.toString.call( target ) !== "[object Object]" ) {
-          return false;
-        }
-        proto = getProto( target );
-        // Objects with no prototype (e.g., `Object.create( null )`) are plain
-        if ( !proto ) {
-          return true;
-        }
-        // Objects with prototype are plain iff they were constructed by a global Object function
-        Ctor = oo.hasOwnProperty.call( proto, "constructor" ) && proto.constructor;
-        return typeof Ctor === "function" && oo.hasOwnProperty.call( Ctor.prototype, "isPrototypeOf");
-      },
-
-      // Deeply extend a object with b object properties.
-      simpleExtend: function ( a, b ) {
-        var clone, src, copy, isAnArray = false; 
-        for( var key in b ) {
-
-          src = a[ key ];
-				  copy = b[ key ];
-
-          //Avoid infinite loop.
-          if ( a === copy ) {
-					  continue;
-				  }
-
-          if( b.hasOwnProperty( key ) ) {
-            // If propertie is Array or Object.
-            if( copy && ( fn.isPlainObject( copy ) || (isAnArray = Array.isArray.call( copy )))) {
-              if ( isAnArray ) {
-                isAnArray = false;
-                clone = ( src && src.isArray ) ? src : [];
-              } else {
-                clone = ( src && fn.isPlainObject( src ) ) ? src : {};
-              }
-              // Create new Array or Object, never reference it.
-              a[ key ] = fn.simpleExtend( clone, copy );
-
-            } else {
-                a[ key ] = copy;
-            }
-          }
-        }
-        return a;
-      },
-
-      loadImage: function ( src, self, thumb ) {
-
-            var img = new Image();
-            // When image is loaded.
-            img.onload = function(){
-
-              // Create slide, with Image input.
-              var m = self.createSlide( this );
-
-              if ( !thumb ) return;
-              
-              // Create and store thumb.
-              m.renderThumbnails( self.settings.thumdnailsID, false );
-
-            };
-            // Load img.
-            img.src = src;
-      }
-    };
 
   // Matrix class object.
   function Matrix ( instance, input, customSize ) {
@@ -319,11 +200,11 @@ var slideParticles = (function (window, document, undefined) {
     // Create and store one matrix per mode registered, if instance.settings.modes[mode_name] is true.
     buildAllMatrix: function () {
       var m, mA = {};
-      for ( var mode in matrixMethod ) {
+      for ( var mode in modes ) {
         if ( !this.instance.settings.modes[mode] ) continue;
         m = this.creaMatrix();
-        this.applyFilter( filters[mode].name, this.instance.settings[filters[mode].param] );
-        this[matrixMethod[mode]](m, 1);
+        this.applyFilter( modes[mode].filters.name, this.instance.settings[modes[mode].filters.param] );
+        this[modes[mode].matrixMethod](m, 1);
         mA[mode] = m;
       }
       return mA;
@@ -362,26 +243,6 @@ var slideParticles = (function (window, document, undefined) {
       }
     },
 
-    // Construct matrix, according to canvas's image data values.
-    // If image data pixel is white, corresponding matrix case is set too value.
-    // If image data pixel is black, corresponding matrix case is set to 0.
-    valueMatrix: function ( matrix, value ) {
-      var a = this.size.x,
-        b = Math.min( Math.floor(a + this.size.w), matrix.length ),
-        c = this.size.y,
-        d = Math.min( Math.floor(c + this.size.h), matrix[0].length );
-      if( matrix.length < a || matrix[0].length < d ) return;
-
-      var i, j, p = this.context.getImageData(0, 0, this.instance.canvas.width, this.instance.canvas.height).data;
-
-      for( i = a; i < b; i++ ){
-        for( j = c; j < d; j++ ){
-          var pix = p[((this.instance.canvas.width * j) + i) * 4];
-          matrix[i][j] = ( pix === 255 ) ? value : 0;
-        }
-      }
-    },
-
     // Create canvas thumbnails of the picture store on this Matrix.
     renderThumbnails: function ( target, filter ) {
       var self = this;
@@ -391,7 +252,7 @@ var slideParticles = (function (window, document, undefined) {
 
       // Apply filter.
       if ( filter ) {
-        m.applyFilter( filters[this.instance.mode].name, this.settings[filters[this.instance.mode].param] );
+        m.applyFilter( modes[this.instance.mode].filters.name, this.settings[modes[this.instance.mode].filters.param] );
       }
       // Apply style.
       m.canvas.style.cursor = 'pointer';
@@ -473,6 +334,11 @@ var slideParticles = (function (window, document, undefined) {
         this.activeIndex = ( this.activeIndex === null ) ? 0 : this.activeIndex;
         this.matrixTab.push( m );
         return m;
+      },
+
+      // Create and return new Vector instance. Usefull for Particles methods extends via registerMode.
+      getNewVector: function ( x, y ) {
+        return new Vector( x, y );
       },
 
       // Create and return canvas element. If no size specified, take instance's settings size.
@@ -589,30 +455,31 @@ var slideParticles = (function (window, document, undefined) {
 
       // Call particle methods in each loop, according to active mode and corresponding proceed settings.
       partProceed: function ( particle ) {
-        var i, l = proceed[this.mode].length;
+        var i, proceed = modes[this.mode].proceed,
+        l = proceed.length;
         for ( i = 0; i < l; i++ ) {
-          particle[proceed[this.mode][i]]();
+          particle[proceed[i]]();
         }
       },
 
       // Set activeIndex to matrix's thumb index.
       goTo: function ( matrix ) {
-        this.callNextMatrixMode();
+        this.callNextSlideAnim();
         this.activeIndex = this.thumbOriginalTab.indexOf( matrix );
       },
 
       // Method to add new switch matrix function.
-      registerNextMatrixMode: function ( name, fn ) {
+      registerNextSlideAnim: function ( name, fn ) {
         if ( typeof fn !== 'function' || typeof name !== 'string' ) {
           return console.log( 'Error, name required and must be type string, fn required and must be type function' );
         }
-        nextMatrixMode[ name ] = fn;
+        nextSlideAnim[ name ] = fn;
       },
 
       // Function called between old and new matrix active.
-      callNextMatrixMode: function (){
+      callNextSlideAnim: function (){
         try {
-          nextMatrixMode[ this.settings.nextMatrixMode ].call( this );
+          nextSlideAnim[ this.settings.nextSlideAnim ].call( this );
         } catch ( e ) {
           console.log( e.name + ' - ' + e.message);
         }
@@ -807,51 +674,6 @@ var slideParticles = (function (window, document, undefined) {
       }
     };
 
-    // Proceed particle according to matrix of type 'value'. Called in modeForm.
-    Particle.prototype.soumisForm = function(){
-
-      // If liberation flag, make the particle free.
-      if( this.instance.liberation ){
-        this.inForm = 0;
-        return;
-      }
-
-      // Get particle position.
-      var testX = Math.floor( this.position.x );
-      var testY = Math.floor( this.position.y );
-
-      // Check matrix value according to particle's position.
-      var value = ( this.instance.activeIndex !== null ) ? this.instance.matrixTab[this.instance.activeIndex].getMatrix()[testX][testY] : 0;
-
-      // If particle is inside a 'white zone'.
-      if ( value !== 0 ){
-
-        // If particles just come into the 'white zone'.
-        if( this.inForm !== 1 ){
-
-          // Up the form flag.
-          this.inForm = 1;
-
-          // Slow the particle.
-          this.vitesse = new Vector(this.vitesse.x * 0.2, this.vitesse.y * 0.2);
-
-          // Cut the acceleration.
-          this.acceleration = new Vector(0, 0);
-        }
-      }
-
-      // If particle is not inside 'white zone'.
-      else {
-
-        // If the particle just get out the zone.
-        if( this.inForm === 1 ){
-
-          // It's not free : invert speed.
-          this.vitesse.getInvert();
-        }
-      }
-    };
-
     // Mass constructor.
     function Mass( point, mass ) {
       this.position = point;
@@ -863,95 +685,99 @@ var slideParticles = (function (window, document, undefined) {
       this.color = mass < 0 ? "#f00" : "#0f0";
     };
 
+    /**
+     * Utility functions.
+     * 
+     */
+    fn = {
+      // Return viewport size.
+      getViewport: function() {
+        return {
+          w: Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+          h: Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+        };
+      },
 
-  // POLYFILL
-
-  // Production steps of ECMA-262, Edition 5, 15.4.4.14
-  // Référence : http://es5.github.io/#x15.4.4.14
-  if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function(searchElement, fromIndex) {
-      var k;
-      if (this == null) {
-        throw new TypeError('"this" vaut null ou n est pas défini');
-      }
-      var O = Object(this);
-      var len = O.length >>> 0;
-      if (len === 0) {
-        return -1;
-      }
-      var n = +fromIndex || 0;
-      if (Math.abs(n) === Infinity) {
-        n = 0;
-      }
-      if (n >= len) {
-        return -1;
-      }
-      k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
-      while (k < len) {
-        if (k in O && O[k] === searchElement) {
-          return k;
+      // Append element in target.
+      append: function ( target, element ) {
+        if ( typeof target === 'string' ) {
+          document.getElementById( target ).appendChild( element );
         }
-        k++;
+        else {
+          target.appendChild( element );
+        }
+      },
+
+      // Test if target is plain object. Thank you jQuery 3+ !
+      isPlainObject: function ( target ) {
+        var proto, Ctor;
+        // Detect obvious negatives
+        // Use toString instead of jQuery.type to catch host objects
+        if ( !target || oo.toString.call( target ) !== "[object Object]" ) {
+          return false;
+        }
+        proto = getProto( target );
+        // Objects with no prototype (e.g., `Object.create( null )`) are plain
+        if ( !proto ) {
+          return true;
+        }
+        // Objects with prototype are plain iff they were constructed by a global Object function
+        Ctor = oo.hasOwnProperty.call( proto, "constructor" ) && proto.constructor;
+        return typeof Ctor === "function" && oo.hasOwnProperty.call( Ctor.prototype, "isPrototypeOf");
+      },
+
+      // Deeply extend a object with b object properties.
+      simpleExtend: function ( a, b ) {
+        var clone, src, copy, isAnArray = false; 
+        for( var key in b ) {
+
+          src = a[ key ];
+				  copy = b[ key ];
+
+          //Avoid infinite loop.
+          if ( a === copy ) {
+					  continue;
+				  }
+
+          if( b.hasOwnProperty( key ) ) {
+            // If propertie is Array or Object.
+            if( copy && ( fn.isPlainObject( copy ) || (isAnArray = Array.isArray.call( copy )))) {
+              if ( isAnArray ) {
+                isAnArray = false;
+                clone = ( src && src.isArray ) ? src : [];
+              } else {
+                clone = ( src && fn.isPlainObject( src ) ) ? src : {};
+              }
+              // Create new Array or Object, never reference it.
+              a[ key ] = fn.simpleExtend( clone, copy );
+
+            } else {
+                a[ key ] = copy;
+            }
+          }
+        }
+        return a;
+      },
+
+      loadImage: function ( src, self, thumb ) {
+
+            var img = new Image();
+            // When image is loaded.
+            img.onload = function(){
+
+              // Create slide, with Image input.
+              var m = self.createSlide( this );
+
+              if ( !thumb ) return;
+              
+              // Create and store thumb.
+              m.renderThumbnails( self.settings.thumdnailsID, false );
+
+            };
+            // Load img.
+            img.src = src;
       }
-      return -1;
     };
-  }
-
-  // if (typeof Object.assign != 'function') {
-  //   Object.assign = function (target, varArgs) { // .length of function is 2
-  //     'use strict';
-  //     if (target == null) { // TypeError if undefined or null
-  //       throw new TypeError('Cannot convert undefined or null to object');
-  //     }
-
-  //     var to = Object(target);
-
-  //     for (var index = 1; index < arguments.length; index++) {
-  //       var nextSource = arguments[index];
-
-  //       if (nextSource != null) { // Skip over if undefined or null
-  //         for (var nextKey in nextSource) {
-  //           // Avoid bugs when hasOwnProperty is shadowed
-  //           if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-  //             to[nextKey] = nextSource[nextKey];
-  //           }
-  //         }
-  //       }
-  //     }
-  //     return to;
-  //   };
-  // }
-
-  // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-  // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
-  // requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
-  // MIT license
-
-  (function() {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-      window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-      window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
-        || window[vendors[x]+'CancelRequestAnimationFrame'];
-    }
-
-    if (!window.requestAnimationFrame)
-      window.requestAnimationFrame = function(callback, element) {
-        var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-          timeToCall);
-        lastTime = currTime + timeToCall;
-        return id;
-      };
-
-    if (!window.cancelAnimationFrame)
-      window.cancelAnimationFrame = function(id) {
-        clearTimeout(id);
-      };
-  }());
-
 
   /**
    * PUBLIC METHODS.
@@ -976,16 +802,20 @@ var slideParticles = (function (window, document, undefined) {
       // Register new mode.
       defaults.modes[name] = true;
 
-      // Extend defaults, Particles and Matrix class.
+      // Extend defaults, filter, Particles and Matrix class.
       fn.simpleExtend( defaults, param.options );
+      fn.simpleExtend( filter, param.filter );
       fn.simpleExtend( DiapPart.prototype, param.proto );
       fn.simpleExtend( Particle.prototype, param.proto_particles );
       fn.simpleExtend( Matrix.prototype, param.proto_matrix );
       
       // Register new mode filters, proceed and matrixMethod.
-      filters[name] = param.scenario.filters;
-      proceed[name] = param.scenario.proceed;
-      matrixMethod[name] = param.scenario.matrixMethod;
+      modes[name] = param.modeData;
+    },
+
+    // Call it to extend nextSlideAnim.
+    registerTransition: function ( obj ) {
+      fn.simpleExtend( nextSlideAnim, obj );
     }
   };
 

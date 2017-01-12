@@ -50,26 +50,16 @@
       },
       "Explode": {
         "0": {
-          "draw": false,
           "density": 5000,
-          "particleSize": 1,
-          "initialVelocity": 3,
           "mass": 5000,
-          "particleColor": "#000",
-          "background": "#fff",
           "antiMass": -5000,
           "delay": 700
         }
       },
       "Implode": {
         "0": {
-          "draw": false,
           "density": 5000,
-          "particleSize": 1,
-          "initialVelocity": 3,
           "mass": -5000,
-          "particleColor": "#000",
-          "background": "#fff",
           "antiMass": 5000,
           "delay": 700
         }
@@ -88,7 +78,7 @@
     dp.switchMode( 'modeColor' );
   };
   controller.modeShape = function () {
-    dp.switchMode( 'modeForm' );
+    dp.switchMode( 'modeShape' );
   };
   controller.uploadFiles = function () {
     btnUpload.click();

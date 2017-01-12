@@ -25,7 +25,7 @@ slideParticles.registerMode( 'modeColor', {
     }
   },
   filter: {},
-  scenario: {
+  modeData: {
     filters: {
       name: null,
       param: null

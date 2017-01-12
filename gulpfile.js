@@ -21,8 +21,11 @@ var COMPATIBILITY = ['last 2 versions', 'ie >= 9'];
 // File paths to various assets are defined here.
 var PATHS = {
   myjs: [
+    'src/js/polyfill.js',
     'src/js/core.js',
-    'src/js/color.js'
+    'src/js/shape.js',
+    'src/js/color.js',
+    'src/js/transitions.js'
   ]
 };
 
